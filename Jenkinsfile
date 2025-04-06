@@ -1,50 +1,30 @@
 pipeline {
     agent any
-
     environment {
-        IMAGE_NAME = 'kuppusav/pythonapp'
+        DOCKER_HUB_REPO = 'kuppusav/pythonapp'
     }
-
     stages {
-        stage('Checkout Code') {
+        stage('Clone Repository') {
             steps {
-                echo 'Checking out code...'
-                checkout([
-                    $class: 'GitSCM',
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/vishalkuppusamy/pythonapp.git',
-                        credentialsId: 'github'
-                    ]],
-                    branches: [[name: '*/main']]
-                ])
+                git branch: 'main', url: 'https://github.com/vishalkuppusamy/pythonapp.git'
             }
         }
-
-        stage('Build and Push Docker Image') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Logging in and pushing image...'
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    '''
+                sh 'docker build -t $DOCKER_HUB_REPO .'
+            }
+        }
+        stage('Push to Docker Hub') {
+            steps {
+                withDockerRegistry([credentialsId: 'dockerhub', url: '']) {
+                    sh 'docker push $DOCKER_HUB_REPO'
                 }
             }
         }
-    }
-
-    post {
-        always {
-            echo 'Pipeline execution completed.'
-        }
-        success {
-            echo 'Image pushed to Docker Hub successfully.'
-        }
-        failure {
-            echo 'Pipeline failed. Check error logs.'
+        stage('Deploy Container') {
+            steps {
+                sh 'docker run -d -p 5000:5000 $DOCKER_HUB_REPO'
+            }
         }
     }
 }
