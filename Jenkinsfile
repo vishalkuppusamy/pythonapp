@@ -1,30 +1,39 @@
 pipeline {
     agent any
-    environment {
-        DOCKER_HUB_REPO = 'kuppusav/hello-vishal'
-    }
+
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/vishalkuppusamy/pythonapp.git'
+                checkout([$class: 'GitSCM',
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/vishalkuppusamy/pythonapp.git',
+                        credentialsId: 'github'
+                    ]],
+                    branches: [[name: '*/main']]
+                ])
             }
         }
-        stage('Build Docker Image') {
+
+        stage('Docker') {
             steps {
-                sh 'docker build -t $DOCKER_HUB_REPO .'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub', // corrected key
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )])
             }
         }
-        stage('Push to Docker Hub') {
-            steps {
-                withDockerRegistry([credentialsId: 'dockerhub', url: '']) {
-                    sh 'docker push $DOCKER_HUB_REPO'
-                }
-            }
+    }
+
+    post {
+        always {
+            echo 'Pipeline was completed.'
         }
-        stage('Deploy Container') {
-            steps {
-                sh 'docker run -d -p 5000:5000 $DOCKER_HUB_REPO'
-            }
+        success {
+            echo 'Pipeline was successful.'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
