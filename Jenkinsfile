@@ -21,10 +21,11 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Container') {
-            steps {
-                sh 'docker run -d -p 5000:5000 $DOCKER_HUB_REPO:${BUILD_NUMBER}'
-            }
+    }
+     post {
+        success {
+            echo 'Triggering another project'
+            build job: "manifestk8s"
         }
     }
 }
