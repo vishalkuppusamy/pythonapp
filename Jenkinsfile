@@ -24,8 +24,8 @@ pipeline {
     }
      post {
         success {
-            echo 'Triggering another project'
-            build job: "manifestk8s"
+            echo 'Triggering another project: manifestk8s '
+            build job: "manifestk8s", parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
         }
     }
 }
