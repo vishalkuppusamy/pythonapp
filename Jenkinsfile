@@ -5,7 +5,8 @@ pipeline {
         SLACK_CHANNEL = '#pragrajenkins'
         REGISTRY = 'docker.io'
         IMAGE_NAME = 'kuppusav/pythonapp'
-        ARGO_REPO = 'git@github.com:vishalkuppusamy/pythonapp-k8s.git'
+        Manifest_Repo = 'git@github.com:vishalkuppusamy/pythonapp-k8s.git'
+        SONARQUBE_SERVER = 'SonarQube-Server'
     }
     stages {
         stage('Clone Repository') {
@@ -15,11 +16,23 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube-server') {
-                    sh 'sonar-scanner -Dsonar.projectKey=pythonapp -Dsonar.sources=.'
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    script {
+                        def scannerHome = tool 'SonarScanner'
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $DOCKER_HUB_REPO:${BUILD_NUMBER} .'
@@ -39,13 +52,13 @@ pipeline {
         }
         stage('Update Kubernetes Manifest and Push') {
             steps {
-                sshagent (credentials: ['argo-repo-ssh-key']) {
+                sshagent (credentials: ['k8s-repo-ssh-key']) {
                     sh '''
-                        git clone ${ARGO_REPO} argo-repo
-                        cd argo-repo
+                        git clone ${Manifest_Repo} pythonk8s-repo
+                        cd pythonk8s-repo
                         sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}|" manifests/deployment.yaml
-                        git config user.email "ci@company.com"
-                        git config user.name "CI Bot"
+                        git config user.email "kuppusav@gmail.com"'
+                        git config user.name "kuppusav"
                         git commit -am "Update image tag to ${BUILD_NUMBER}"
                         git push origin main
                     '''
