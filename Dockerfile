@@ -1,15 +1,20 @@
-FROM  alpine:3.8
-    
-COPY  .  /app
 
-WORKDIR  /app
+FROM python:3.9-alpine AS builder
 
-RUN apk add python3 
+WORKDIR /app
 
-RUN  pip3 install  -r requirements.txt 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+
+FROM gcr.io/distroless/python3
+
+WORKDIR /app
+
+COPY --from=builder /app /app
 
 EXPOSE 5000
 
-ENTRYPOINT [ "python3" ]
-
-CMD [ "app.py" ]
+CMD ["app.py"]
