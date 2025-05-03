@@ -34,7 +34,7 @@ pipeline {
         }
         stage('Update Kubernetes Manifest and Push') {
             steps {
-                sshagent (credentials: ['k8s-repo-ssh-key']) {
+                 withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh '''
                         git clone ${MANIFEST_REPO} pythonk8s-repo
                         cd pythonk8s-repo
