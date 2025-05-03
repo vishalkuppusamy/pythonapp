@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_HUB_REPO = 'kuppusav/pythonapp'
+        SLACK_CHANNEL = '#pragrajenkins'
     }
     stages {
         stage('Clone Repository') {
