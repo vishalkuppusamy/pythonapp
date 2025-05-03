@@ -17,16 +17,19 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv("${SONARQUBE_SERVER}") {
-        sh '''
-            sonar-scanner \
-            -Dsonar.projectKey=pythonappkey \
-            -Dsonar.projectName=pythonapp \
-            -Dsonar.sources=. \
-            -Dsonar.language=py \
-            -Dsonar.inclusions=**/*.py \
-            -Dsonar.host.url=http://159.203.53.52:9000 \
-            -Dsonar.login=sqp_17308c0d9cd588aaff935a58a91b01caa85b9808
-        '''
+                    script {
+                        def scannerHome = tool 'SonarScanner'
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=pythonappkey \
+                        -Dsonar.projectName=pythonapp \
+                        -Dsonar.sources=. \
+                        -Dsonar.language=py \
+                        -Dsonar.inclusions=**/*.py \
+                        -Dsonar.host.url=http://159.203.53.52:9000 \
+                        -Dsonar.login=sqp_17308c0d9cd588aaff935a58a91b01caa85b9808
+                        """
+                }
          }
     }
 }
