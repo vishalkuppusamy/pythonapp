@@ -5,7 +5,7 @@ pipeline {
         SLACK_CHANNEL = '#pragrajenkins'
         REGISTRY = 'docker.io'
         IMAGE_NAME = 'kuppusav/pythonapp'
-        MANIFEST_REPO = 'git@github.com:vishalkuppusamy/pythonapp-k8s.git'
+        MANIFEST_REPO = 'https://github.com/vishalkuppusamy/pythonapp-k8s.git'
         SONARQUBE_SERVER = 'SonarQube-Server'
     }
     stages {
