@@ -42,7 +42,7 @@ pipeline {
             git config user.email "kuppusav@gmail.com"
             git config user.name "kuppusav"
             git commit -am "Update image tag to ${BUILD_NUMBER}"
-            git push origin main
+            git push https://$GIT_USERNAME:$GIT_PASSWORD@github.com/vishalkuppusamy/pythonapp-k8s.git main
         """
     }
 }
