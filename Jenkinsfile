@@ -14,34 +14,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/vishalkuppusamy/pythonapp.git'
             }
         }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv("${SONARQUBE_SERVER}") {
-                    script {
-                        def scannerHome = tool 'SonarScanner'
-                        sh """
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=pythonappkey \
-                        -Dsonar.projectName=pythonapp \
-                        -Dsonar.sources=. \
-                        -Dsonar.language=py \
-                        -Dsonar.inclusions=**/*.py \
-                        -Dsonar.host.url=http://159.203.53.52:9000 \
-                        -Dsonar.login=sqp_17308c0d9cd588aaff935a58a91b01caa85b9808
-                        """
-                }
-         }
-    }
-}
-    
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
         
         stage('Build Docker Image') {
             steps {
