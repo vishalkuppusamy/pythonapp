@@ -5,7 +5,7 @@ pipeline {
         SLACK_CHANNEL = '#pragrajenkins'
         REGISTRY = 'docker.io'
         IMAGE_NAME = 'kuppusav/pythonapp'
-        Manifest_Repo = 'git@github.com:vishalkuppusamy/pythonapp-k8s.git'
+        MANIFEST_REPO = 'git@github.com:vishalkuppusamy/pythonapp-k8s.git'
         SONARQUBE_SERVER = 'SonarQube-Server'
     }
     stages {
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['k8s-repo-ssh-key']) {
                     sh '''
-                        git clone ${Manifest_Repo} pythonk8s-repo
+                        git clone ${MANIFEST_REPO} pythonk8s-repo
                         cd pythonk8s-repo
                         sed -i "s|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}|" manifests/deployment.yaml
                         git config user.email "kuppusav@gmail.com"'
