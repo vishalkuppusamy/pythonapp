@@ -23,9 +23,14 @@ pipeline {
         }
     }
      post {
-        success {
-            echo 'Triggering another project: manifestk8s '
-            build job: "manifestk8s", parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
+       success {
+            slackSend(channel: "${SLACK_CHANNEL}", message: "✅ *Pipeline Successful*: `${JOB_NAME}` build #${BUILD_NUMBER} (<${BUILD_URL}|View Build>)")
+        }
+        failure {
+            slackSend(channel: "${SLACK_CHANNEL}", message: "🚨 *Pipeline Failed*: `${JOB_NAME}` build #${BUILD_NUMBER} (<${BUILD_URL}|View Build>)")
+        }
+        always {
+            cleanWs()
         }
     }
 }
