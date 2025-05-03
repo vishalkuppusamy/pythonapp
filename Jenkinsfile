@@ -39,7 +39,7 @@ pipeline {
                         git clone ${MANIFEST_REPO} pythonk8s-repo
                         cd pythonk8s-repo
                         sed -i 's|image:.*|image: '"$REGISTRY"'/'"$IMAGE_NAME"':'"$BUILD_NUMBER"'|' k8s-app.yaml
-                        git config user.email "kuppusav@gmail.com"'
+                        git config user.email "kuppusav@gmail.com"
                         git config user.name "kuppusav"
                         git commit -am "Update image tag to ${BUILD_NUMBER}"
                         git push origin main
