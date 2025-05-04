@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKER_HUB_REPO = 'kuppusav/pythonapp'
-        SLACK_CHANNEL = '#pragrajenkins'
+        SLACK_CHANNEL = '#jenkins'
         REGISTRY = 'docker.io'
         IMAGE_NAME = 'kuppusav/pythonapp'
         MANIFEST_REPO = 'https://github.com/vishalkuppusamy/pythonapp-k8s.git'
