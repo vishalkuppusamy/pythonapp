@@ -36,7 +36,7 @@ pipeline {
            steps {
     withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
         sh """
-            git clone ${MANIFEST_REO} pythonk8s-repo
+            git clone ${MANIFEST_REPO} pythonk8s-repo
             cd pythonk8s-repo
             sed -i 's|image:.*|image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}|' k8s-app.yaml
             git config user.email "kuppusav@gmail.com"
